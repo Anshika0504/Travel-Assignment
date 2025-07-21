@@ -1,0 +1,66 @@
+.hotel-bookings-wrapper {
+  font-family: 'Segoe UI', sans-serif;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.section-heading {
+  font-size: 22px;
+  margin-bottom: 15px;
+  margin-left: 10px;
+  margin-top: 2px;
+}
+
+.highlight {
+  color: #6a44c5;
+}
+
+.hotel-bookings-container {
+  border: 2px solid #6a44c5;
+  border-radius: 10px;
+  background-color: white;
+  overflow: hidden;
+}
+
+.booking-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 0.5fr 2fr;
+  background-color: #2c2a7d;
+  color: white;
+  padding: 12px 0;
+  font-weight: bold;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.booking-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 0.5fr 2fr;
+  background-color: #f1eeff;
+  padding: 10px 0;
+  font-size: 14px;
+  border-top: 1px solid #ccc;
+}
+
+.col {
+  padding: 0 16px;
+  border-right: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+}
+
+.col:last-child {
+  border-right: none;
+}
+
+.footnotes {
+  font-size: 12px;
+  margin-top: 12px;
+  padding-left: 20px;
+  color: #444;
+}
+
+.footnotes li {
+  margin-bottom: 5px;
+}

@@ -1,0 +1,32 @@
+.company-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  font-family: Arial, sans-serif;
+}
+
+.company-info,
+.contact-info {
+  max-width: 35%;
+  line-height: 1.6;
+}
+
+.logo {
+  text-align: right;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.vigovia-text {
+  font-size: 24px;
+  font-weight: bold;
+  color: #3c3c7c;
+}
+
+.tagline {
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: #555;
+}

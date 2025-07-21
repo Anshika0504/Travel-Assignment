@@ -1,0 +1,72 @@
+.visa-section {
+  text-align: center;
+  font-family: 'Segoe UI', sans-serif;
+  padding: 30px 20px;
+}
+
+.section-title {
+  font-size: 24px;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.highlight {
+  color: #7a3eb1;
+}
+
+.visa-info-box {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  background-color: #f7f5fa;
+  padding: 16px 24px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  max-width: 700px;
+  margin: 0 auto 30px;
+}
+
+.visa-item {
+  flex: 1;
+  min-width: 180px;
+  margin: 8px 12px;
+  text-align: left;
+}
+
+.label {
+  font-weight: 600;
+  color: #555;
+}
+
+.value {
+  margin-left: 6px;
+  font-weight: 500;
+  color: #333;
+}
+
+.cta-container {
+  margin-top: 10px;
+}
+
+.cta-heading {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 14px;
+  color: #3c3363;
+}
+
+.book-button {
+  background-color: #7a3eb1;
+  color: white;
+  border: none;
+  border-radius: 28px;
+  padding: 12px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.book-button:hover {
+  background-color: #6532a1;
+}

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="/public/css/styles.css" />
+</head>
+<body>
+  <h1><%= title %> - Itinerary</h1>
+  <p><strong>Name:</strong> <%= name %></p>
+  <p><strong>From:</strong> <%= source %> to <%= destination %></p>
+  <p><strong>Members:</strong> <%= members %></p>
+  <p><strong>Dates:</strong> <%= arrivalDate %> - <%= departureDate %></p>
+
+  <% days.forEach((day, index) => { %>
+    <h2>Day <%= index + 1 %> - <%= day.date %></h2>
+    <h3>Morning</h3>
+    <ul>
+      <% day.morning.forEach(act => { %>
+        <li><%= act.time %> - <%= act.description %></li>
+      <% }) %>
+    </ul>
+    <h3>Afternoon</h3>
+    <ul>
+      <% day.afternoon.forEach(act => { %>
+        <li><%= act.time %> - <%= act.description %></li>
+      <% }) %>
+    </ul>
+    <h3>Evening</h3>
+    <ul>
+      <% day.evening.forEach(act => { %>
+        <li><%= act.time %> - <%= act.description %></li>
+      <% }) %>
+    </ul>
+  <% }) %>
+</body>
+</html>

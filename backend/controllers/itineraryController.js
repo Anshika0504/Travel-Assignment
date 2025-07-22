@@ -1,78 +1,85 @@
-const ejs = require('ejs');
-const path = require('path');
 const fs = require('fs');
+const path = require('path');
+const ejs = require('ejs');
 const puppeteer = require('puppeteer');
+const { v4: uuidv4 } = require('uuid');
 
-// Safely segregate activities into morning, afternoon, evening
-const segregateActivities = (activities) => {
-  const result = { morning: [], afternoon: [], evening: [] };
-
-  if (!Array.isArray(activities)) {
-    console.error('Invalid format for activities. Expected an array, got:', typeof activities);
-    return result;
-  }
-
-  activities.forEach(({ time, description }) => {
-    if (!time || !description) return; // Skip invalid entries
-    const [hour] = time.split(':').map(Number);
-    const activity = { time, description };
-
-    if (hour >= 5 && hour < 12) result.morning.push(activity);
-    else if (hour >= 12 && hour < 18) result.afternoon.push(activity);
-    else result.evening.push(activity);
-  });
-
-  return result;
-};
-
-const generateItineraryPDF = async (req, res) => {
+exports.createItinerary = async (req, res) => {
   try {
-    const {
-      title,
-      name,
-      source,
-      destination,
-      members,
-      arrivalDate,
-      departureDate,
-      travelDays,
-      days
-    } = req.body;
+    const data = req.body;
 
-    if (!Array.isArray(days)) {
-      return res.status(400).json({ message: 'Invalid format for days. Expected an array.' });
-    }
+    const segregatedDays = data.days.map((day) => {
+      const allActivities = [];
 
-    const structuredDays = days.map(day => {
-      const parts = segregateActivities(day.activities);
-      return { date: day.date, ...parts };
+      // Include normal activities
+      if (day.activities) {
+        allActivities.push(...day.activities);
+      }
+
+      // Include flights in activities with enhanced description
+      if (day.flights) {
+        day.flights.forEach((flight) => {
+          const flightActivity = {
+            time: flight.time,
+            description: `Flight from ${data.source} to ${data.destination} - ${flight.description || ''}`
+          };
+          allActivities.push(flightActivity);
+        });
+      }
+
+      // Segregate into time slots
+      const segregated = {
+        morning: [],
+        afternoon: [],
+        evening: []
+      };
+
+      allActivities.forEach((act) => {
+        if (act.time && typeof act.time === 'string' && act.time.includes(':')) {
+          const [hourStr] = act.time.split(':');
+          const hour = parseInt(hourStr, 10);
+
+          if (!isNaN(hour)) {
+            if (hour >= 5 && hour < 12) {
+              segregated.morning.push(act);
+            } else if (hour >= 12 && hour < 17) {
+              segregated.afternoon.push(act);
+            } else {
+              segregated.evening.push(act);
+            }
+          }
+        }
+      });
+
+      return {
+        date: day.date,
+        activities: segregated,
+        flights: day.flights || []
+      };
     });
 
-    const html = await ejs.renderFile(
-      path.join(__dirname, '../views/template.ejs'),
-      {
-        title, name, source, destination, members,
-        arrivalDate, departureDate, travelDays,
-        days: structuredDays
-      }
-    );
+    // Render EJS
+    const templatePath = path.join(__dirname, '../views/template.ejs');
+    const html = await ejs.renderFile(templatePath, {
+      ...data,
+      days: segregatedDays
+    });
 
-    const pdfPath = path.join(__dirname, '../pdfs/', `${title.replace(/\s+/g, '_')}_itinerary.pdf`);
+    // Generate unique filename
+    const uniqueFilename = `itinerary-${uuidv4()}.pdf`;
+    const pdfPath = path.join(__dirname, `../pdfs/${uniqueFilename}`);
 
-    const browser = await puppeteer.launch();
+    // Generate PDF
+    const browser = await puppeteer.launch({ headless: 'new' });
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: 'networkidle0' });
     await page.pdf({ path: pdfPath, format: 'A4' });
     await browser.close();
 
-    res.status(200).json({
-      message: 'PDF generated successfully',
-      pdfUrl: `/pdfs/${path.basename(pdfPath)}`
-    });
+    // Send PDF
+    res.download(pdfPath);
   } catch (error) {
-    console.error('Error generating PDF:', error);
-    res.status(500).json({ message: 'Failed to generate itinerary' });
+    console.error('Error creating itinerary:', error);
+    res.status(500).send('Error generating itinerary PDF');
   }
 };
-
-module.exports = { generateItineraryPDF };

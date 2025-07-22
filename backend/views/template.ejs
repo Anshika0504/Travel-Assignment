@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
+  <title><%= title %> - Itinerary</title>
   <link rel="stylesheet" href="/public/css/styles.css" />
 </head>
 <body>
@@ -8,28 +10,56 @@
   <p><strong>Name:</strong> <%= name %></p>
   <p><strong>From:</strong> <%= source %> to <%= destination %></p>
   <p><strong>Members:</strong> <%= members %></p>
-  <p><strong>Dates:</strong> <%= arrivalDate %> - <%= departureDate %></p>
+  <p><strong>Arrival Date:</strong> <%= arrivalDate %></p>
+  <p><strong>Departure Date:</strong> <%= departureDate %></p>
 
   <% days.forEach((day, index) => { %>
+    <hr />
     <h2>Day <%= index + 1 %> - <%= day.date %></h2>
-    <h3>Morning</h3>
-    <ul>
-      <% day.morning.forEach(act => { %>
-        <li><%= act.time %> - <%= act.description %></li>
-      <% }) %>
-    </ul>
-    <h3>Afternoon</h3>
-    <ul>
-      <% day.afternoon.forEach(act => { %>
-        <li><%= act.time %> - <%= act.description %></li>
-      <% }) %>
-    </ul>
-    <h3>Evening</h3>
-    <ul>
-      <% day.evening.forEach(act => { %>
-        <li><%= act.time %> - <%= act.description %></li>
-      <% }) %>
-    </ul>
+
+    <h3>Activities</h3>
+    <% if (day.activities.morning.length || day.activities.afternoon.length || day.activities.evening.length) { %>
+      <% if (day.activities.morning.length) { %>
+        <h4>Morning</h4>
+        <ul>
+          <% day.activities.morning.forEach((act) => { %>
+            <li><strong><%= act.time %></strong> - <%= act.description || act.name || "No description" %></li>
+          <% }) %>
+        </ul>
+      <% } %>
+
+      <% if (day.activities.afternoon.length) { %>
+        <h4>Afternoon</h4>
+        <ul>
+          <% day.activities.afternoon.forEach((act) => { %>
+            <li><strong><%= act.time %></strong> - <%= act.description || act.name || "No description" %></li>
+          <% }) %>
+        </ul>
+      <% } %>
+
+      <% if (day.activities.evening.length) { %>
+        <h4>Evening</h4>
+        <ul>
+          <% day.activities.evening.forEach((act) => { %>
+            <li><strong><%= act.time %></strong> - <%= act.description || act.name || "No description" %></li>
+          <% }) %>
+        </ul>
+      <% } %>
+    <% } else { %>
+      <p>No activities planned for this day.</p>
+    <% } %>
+
+    <% if (day.flights.length) { %>
+      <h3>Flights</h3>
+      <ul>
+        <% day.flights.forEach((flight) => { %>
+          <li>
+            <strong>Time:</strong> <%= flight.time %><br />
+            <strong>Description:</strong> <%= flight.description || "No details provided" %>
+          </li>
+        <% }) %>
+      </ul>
+    <% } %>
   <% }) %>
 </body>
 </html>

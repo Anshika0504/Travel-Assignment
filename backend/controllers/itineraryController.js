@@ -11,42 +11,33 @@ exports.createItinerary = async (req, res) => {
     const segregatedDays = data.days.map((day) => {
       const allActivities = [];
 
-      // Include normal activities
       if (day.activities) {
         allActivities.push(...day.activities);
       }
 
-      // Include flights in activities with enhanced description
       if (day.flights) {
         day.flights.forEach((flight) => {
           const flightActivity = {
             time: flight.time,
-            description: `Flight from ${data.source} to ${data.destination} - ${flight.description || ''}`
+            description: `Flight from ${data.source} to ${data.destination} - ${flight.description || ''}`,
           };
           allActivities.push(flightActivity);
         });
       }
 
-      // Segregate into time slots
       const segregated = {
         morning: [],
         afternoon: [],
-        evening: []
+        evening: [],
       };
 
       allActivities.forEach((act) => {
         if (act.time && typeof act.time === 'string' && act.time.includes(':')) {
-          const [hourStr] = act.time.split(':');
-          const hour = parseInt(hourStr, 10);
-
+          const hour = parseInt(act.time.split(':')[0], 10);
           if (!isNaN(hour)) {
-            if (hour >= 5 && hour < 12) {
-              segregated.morning.push(act);
-            } else if (hour >= 12 && hour < 17) {
-              segregated.afternoon.push(act);
-            } else {
-              segregated.evening.push(act);
-            }
+            if (hour >= 5 && hour < 12) segregated.morning.push(act);
+            else if (hour >= 12 && hour < 17) segregated.afternoon.push(act);
+            else segregated.evening.push(act);
           }
         }
       });
@@ -54,29 +45,27 @@ exports.createItinerary = async (req, res) => {
       return {
         date: day.date,
         activities: segregated,
-        flights: day.flights || []
+        flights: day.flights || [],
       };
     });
 
-    // Render EJS
     const templatePath = path.join(__dirname, '../views/template.ejs');
     const html = await ejs.renderFile(templatePath, {
       ...data,
-      days: segregatedDays
+      days: segregatedDays,
+      hotels: data.hotels || [],
+      extraActivities: data.extraActivities || [],
     });
 
-    // Generate unique filename
     const uniqueFilename = `itinerary-${uuidv4()}.pdf`;
     const pdfPath = path.join(__dirname, `../pdfs/${uniqueFilename}`);
 
-    // Generate PDF
     const browser = await puppeteer.launch({ headless: 'new' });
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: 'networkidle0' });
     await page.pdf({ path: pdfPath, format: 'A4' });
     await browser.close();
 
-    // Send PDF
     res.download(pdfPath);
   } catch (error) {
     console.error('Error creating itinerary:', error);
